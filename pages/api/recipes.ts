@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import sqlite3 from 'sqlite3'; // sqlite3ライブラリをインポート
+import { open, Database } from 'sqlite'; // open関数とDatabase型をインポート
 import multer from 'multer';
 import fs from 'fs';
 
@@ -15,11 +15,12 @@ interface Recipe {
 }
 
 // データベース接続をグローバルに管理
-let dbInstance: sqlite3.Database | null = null;
+let dbInstance: Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
-const openDB = async () => {
+// データベース接続の関数
+const openDB = async (): Promise<Database<sqlite3.Database, sqlite3.Statement>> => {
   if (!dbInstance) {
-    dbInstance = await open({
+    dbInstance = await open<sqlite3.Database, sqlite3.Statement>({
       filename: './recipes.db',
       driver: sqlite3.Database,
     });
@@ -27,7 +28,7 @@ const openDB = async () => {
   return dbInstance;
 };
 
-// Vercelの環境では「/tmp」ディレクトリのみ書き込み可能
+// Vercel環境では/tmpが唯一の書き込み可能領域
 const uploadDir = '/tmp/uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -51,7 +52,7 @@ export const config = {
   },
 };
 
-// **`multer`をPromiseでラップして使う関数**
+// **`multer`をPromiseでラップする関数**
 const runMiddleware = (
   req: NextApiRequest,
   res: NextApiResponse,
