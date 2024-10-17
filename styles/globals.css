@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="text"].under-line,
+textarea.under-line {
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    border-bottom: 2px solid #c7c7c7; /* デフォルトの下線色 */
+    background-color: transparent;
+    box-shadow: none;
+    resize: none; /* サイズ変更を無効にする */
+    overflow: hidden; /* スクロールバーを隠す */
+}
+
+input[type="text"].under-line:focus,
+textarea.under-line:focus {
+    outline: none;
+    border-bottom: 2px solid #3a3a3a; /* フォーカス時の下線色（例: 青色） */
+    transition: border-bottom-color 0.3s ease; /* 色が滑らかに変わるように */
+}
+
+
+/* 共通のスタイル */
+
+
+html, body {
+    height: 100%; /* ページ全体の高さを100%に設定 */
+    margin: 0;
+    padding: 0;
+}
+
+#__next {
+    min-height: 100%; /* Next.jsのルート要素の高さを100%に設定 */
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+
+.under-line {
+  width: 100%;
+  padding: 4px 0;
+  border: none;
+  border-bottom: 1px solid #c7c7c7;
+  background-color: transparent;
+  appearance: none; /* 標準の矢印を非表示 */
+  -webkit-appearance: none; /* Safariの対応 */
+  -moz-appearance: none; /* Firefoxの対応 */
+  position: relative;
+}
+
+/* 選択時の下線スタイル */
+.under-line:focus {
+  outline: none;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+/* セレクトボックスの矢印を追加 */
+.select-with-arrow {
+  position: relative;
+}
+
+.select-with-arrow select {
+  appearance: none;
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  padding-right: 30px; /* 矢印のスペースを確保 */
+}
+
+.select-with-arrow::after {
+  content: '▼';
+  font-size: 12px;
+  color: #333;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 矢印をクリックできないようにする */
+}
