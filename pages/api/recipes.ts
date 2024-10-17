@@ -1,13 +1,13 @@
-import sqlite3 from 'sqlite3'; // sqlite3ライブラリをインポート
-import { open, Database } from 'sqlite'; // open関数とDatabase型をインポート
 import { NextApiRequest, NextApiResponse } from 'next';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import multer, { MulterError } from 'multer';
 import path from 'path';
 import fs from 'fs';
 
 // **レシピの型を定義**
 interface Recipe {
-  id?: number; // 新規作成時にはIDがないためオプショナル
+  id?: number;
   title: string;
   description: string;
   ingredients: string[];
@@ -16,13 +16,11 @@ interface Recipe {
 }
 
 // データベース接続をグローバルに管理
-let dbInstance: Database<sqlite3.Database, sqlite3.Statement> | null = null;
+let dbInstance: sqlite3.Database | null = null;
 
-// データベース接続の関数
-const openDB = async (): Promise<Database<sqlite3.Database, sqlite3.Statement>> => {
+const openDB = async () => {
   if (!dbInstance) {
-    // 型アサーションを使用して、戻り値の型を指定
-    dbInstance = await open<sqlite3.Database, sqlite3.Statement>({
+    dbInstance = await open({
       filename: './recipes.db',
       driver: sqlite3.Database,
     });
@@ -30,8 +28,8 @@ const openDB = async (): Promise<Database<sqlite3.Database, sqlite3.Statement>> 
   return dbInstance;
 };
 
-// 画像の保存先ディレクトリを設定
-const uploadDir = path.join(process.cwd(), 'public/uploads');
+// Vercelの環境では「/tmp」ディレクトリのみ書き込み可能
+const uploadDir = '/tmp/uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -39,14 +37,23 @@ if (!fs.existsSync(uploadDir)) {
 // multerの設定
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    cb(null, uploadDir); // 保存先ディレクトリ
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${Date.now()}-${file.originalname}`); // タイムスタンプで重複回避
   },
 });
-
 const upload = multer({ storage });
+
+// **Next.jsのAPIルートでmulterを使うためのラップ関数**
+const runMiddleware = (req: NextApiRequest, res: NextApiResponse, fn: any) => {
+  return new Promise<void>((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) return reject(result);
+      resolve();
+    });
+  });
+};
 
 // Next.jsでmulterを使用するための設定
 export const config = {
@@ -78,52 +85,57 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
-    upload.single('image')(req, res, async (err: MulterError | Error | null) => {
-      if (err) {
-        return res.status(500).json({ message: '画像のアップロード中にエラーが発生しました' });
-      }
-      try {
-        const { title, description, ingredients, instructions } = req.body;
-        const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    try {
+      // multerのミドルウェアを実行
+      await runMiddleware(req, res, upload.single('image'));
 
-        const result = await db.run(
-          'INSERT INTO recipes (title, description, ingredients, instructions, image) VALUES (?, ?, ?, ?, ?)',
-          title, description, JSON.stringify(ingredients), JSON.stringify(instructions), imagePath
-        );
+      const { title, description, ingredients, instructions } = req.body;
+      const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-        const newRecipe: Recipe = {
-          id: result.lastID,
-          title,
-          description,
-          ingredients: JSON.parse(ingredients),
-          instructions: JSON.parse(instructions),
-          image: imagePath,
-        };
-        return res.status(201).json(newRecipe);
-      } catch (error) {
-        console.error('Error saving new recipe:', error);
-        return res.status(500).json({ message: 'レシピ保存中にエラーが発生しました' });
-      }
-    });
+      const result = await db.run(
+        'INSERT INTO recipes (title, description, ingredients, instructions, image) VALUES (?, ?, ?, ?, ?)',
+        title,
+        description,
+        JSON.stringify(ingredients),
+        JSON.stringify(instructions),
+        imagePath
+      );
+
+      const newRecipe: Recipe = {
+        id: result.lastID,
+        title,
+        description,
+        ingredients: JSON.parse(ingredients),
+        instructions: JSON.parse(instructions),
+        image: imagePath,
+      };
+
+      return res.status(201).json(newRecipe);
+    } catch (error) {
+      console.error('Error saving new recipe:', error);
+      return res.status(500).json({ message: 'レシピ保存中にエラーが発生しました' });
+    }
   } else if (req.method === 'PUT') {
-    upload.single('image')(req, res, async (err: MulterError | Error | null) => {
-      if (err) {
-        return res.status(500).json({ message: '画像のアップロード中にエラーが発生しました' });
-      }
-      try {
-        const { id } = req.query;
-        const { title, description, ingredients, instructions } = req.body;
+    try {
+      await runMiddleware(req, res, upload.single('image'));
 
-        await db.run(
-          'UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ? WHERE id = ?',
-          title, description, JSON.stringify(ingredients), JSON.stringify(instructions), id
-        );
-        return res.status(200).json({ message: 'レシピが更新されました' });
-      } catch (error) {
-        console.error('Error updating recipe:', error);
-        return res.status(500).json({ message: 'レシピ更新中にエラーが発生しました' });
-      }
-    });
+      const { id } = req.query;
+      const { title, description, ingredients, instructions } = req.body;
+
+      await db.run(
+        'UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ? WHERE id = ?',
+        title,
+        description,
+        JSON.stringify(ingredients),
+        JSON.stringify(instructions),
+        id
+      );
+
+      return res.status(200).json({ message: 'レシピが更新されました' });
+    } catch (error) {
+      console.error('Error updating recipe:', error);
+      return res.status(500).json({ message: 'レシピ更新中にエラーが発生しました' });
+    }
   } else {
     res.setHeader('Allow', ['GET', 'POST', 'PUT']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
