@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+これは、create-next-appで作成されたNext.jsプロジェクトです。
 
-## Getting Started
+はじめに
+まず、開発サーバーを起動します:
 
-First, run the development server:
-
-```bash
+bash
+コードをコピーする
 npm run dev
-# or
+# または
 yarn dev
-# or
+# または
 pnpm dev
-# or
+# または
 bun dev
-```
+ブラウザで http://localhost:3000 にアクセスして、結果を確認してください。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+app/page.tsx を編集することで、ページの内容を更新できます。ファイルを編集すると、ページは自動的に更新されます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+このプロジェクトでは、next/fontを使用して、新しいフォントファミリーであるGeistを自動的に最適化し、読み込むようにしています。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+さらに学ぶ
+Next.jsについて詳しく知りたい場合は、以下のリソースをご覧ください:
 
-## Learn More
+Next.js ドキュメント - Next.jsの機能やAPIについて学べます。
+Next.js チュートリアル - インタラクティブなNext.jsのチュートリアルです。
+また、Next.js GitHubリポジトリをチェックして、フィードバックや貢献も歓迎しています！
 
-To learn more about Next.js, take a look at the following resources:
+Vercel でのデプロイ
+Next.jsアプリを最も簡単にデプロイする方法は、Next.jsの開発元が提供しているVercel プラットフォームを使用することです。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+詳細については、Next.jsのデプロイに関するドキュメントを参照してください。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# mydishbook
