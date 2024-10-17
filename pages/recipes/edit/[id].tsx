@@ -49,19 +49,19 @@ const EditRecipe = () => {
         }
     };
 
-    const handleInstructionChange = (index: number, value: string) => {
-        setInstructions((prevInstructions) => {
-          const updatedInstructions = [...prevInstructions];
-          updatedInstructions[index] = value;
+    // const handleInstructionChange = (index: number, value: string) => {
+    //     setInstructions((prevInstructions) => {
+    //       const updatedInstructions = [...prevInstructions];
+    //       updatedInstructions[index] = value;
       
-          // 最後の要素が入力された場合、新しい空要素を追加
-          if (index === prevInstructions.length - 1 && value.trim() !== '') {
-            return [...updatedInstructions, ''];
-          }
+    //       // 最後の要素が入力された場合、新しい空要素を追加
+    //       if (index === prevInstructions.length - 1 && value.trim() !== '') {
+    //         return [...updatedInstructions, ''];
+    //       }
       
-          return updatedInstructions;
-        });
-      };
+    //       return updatedInstructions;
+    //     });
+    //   };
       
 
     const handleRemoveIngredient = (index: number) => {
