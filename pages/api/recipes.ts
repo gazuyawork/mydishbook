@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 
 // データベース接続をグローバルに管理
-let dbInstance: any = null;
+let dbInstance: unknown = null;
 
 const openDB = async () => {
     if (!dbInstance) {
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
             const recipes = await db.all('SELECT * FROM recipes');
             // データベースから取得したJSON文字列をオブジェクトに変換
-            const formattedRecipes = recipes.map((recipe: any) => ({
+            const formattedRecipes = recipes.map((recipe: unknown) => ({
                 ...recipe,
                 ingredients: JSON.parse(recipe.ingredients),
                 instructions: JSON.parse(recipe.instructions)
@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // レシピの保存処理 (POST)
     if (req.method === 'POST') {
         // 画像のアップロード処理
-        upload.single('image')(req, res, async (err: any) => {
+        upload.single('image')(req, res, async (err: unknown) => {
             if (err) {
                 return res.status(500).json({ message: '画像のアップロード中にエラーが発生しました' });
             }
@@ -104,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // PUT メソッドの処理
     } else if (req.method === 'PUT') {
-        upload.single('image')(req, res, async (err: any) => {
+        upload.single('image')(req, res, async (err: unknown) => {
             if (err) {
                 return res.status(500).json({ message: '画像のアップロード中にエラーが発生しました' });
             }
