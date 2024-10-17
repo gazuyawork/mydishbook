@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-import multer, { MulterError } from 'multer';
-import path from 'path';
+import multer from 'multer';
 import fs from 'fs';
 
 // **レシピの型を定義**
@@ -36,30 +35,34 @@ if (!fs.existsSync(uploadDir)) {
 
 // multerの設定
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // 保存先ディレクトリ
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // タイムスタンプで重複回避
+  filename: (_req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 const upload = multer({ storage });
 
-// **Next.jsのAPIルートでmulterを使うためのラップ関数**
-const runMiddleware = (req: NextApiRequest, res: NextApiResponse, fn: any) => {
+// Next.jsでmulterを使用するための設定
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+// **`multer`をPromiseでラップして使う関数**
+const runMiddleware = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: (...args: unknown[]) => void
+) => {
   return new Promise<void>((resolve, reject) => {
-    fn(req, res, (result: any) => {
+    fn(req, res, (result: unknown) => {
       if (result instanceof Error) return reject(result);
       resolve();
     });
   });
-};
-
-// Next.jsでmulterを使用するための設定
-export const config = {
-  api: {
-    bodyParser: false, // multerを使うためbodyParserを無効化
-  },
 };
 
 // **APIハンドラ**
@@ -86,7 +89,6 @@ export default async function handler(
 
   if (req.method === 'POST') {
     try {
-      // multerのミドルウェアを実行
       await runMiddleware(req, res, upload.single('image'));
 
       const { title, description, ingredients, instructions } = req.body;
