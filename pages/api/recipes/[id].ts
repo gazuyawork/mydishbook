@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     } else if (req.method === 'PUT') {
         // 画像付きのPUT処理
-        upload.single('image')(req, res, async (err: any) => {
+        upload.single('image')(req, res, async (err: unknown) => {
             if (err) {
                 console.error('Error uploading image:', err);
                 return res.status(500).json({ message: '画像アップロード中にエラーが発生しました' });

@@ -50,14 +50,19 @@ const EditRecipe = () => {
     };
 
     const handleInstructionChange = (index: number, value: string) => {
-        const updatedInstructions = [...instructions];
-        updatedInstructions[index] = value;
-        setInstructions(updatedInstructions);
-
-        if (index === instructions.length - 1 && value.trim() !== '') {
-            setInstructions([...updatedInstructions, '']);
-        }
-    };
+        setInstructions((prevInstructions) => {
+          const updatedInstructions = [...prevInstructions];
+          updatedInstructions[index] = value;
+      
+          // 最後の要素が入力された場合、新しい空要素を追加
+          if (index === prevInstructions.length - 1 && value.trim() !== '') {
+            return [...updatedInstructions, ''];
+          }
+      
+          return updatedInstructions;
+        });
+      };
+      
 
     const handleRemoveIngredient = (index: number) => {
         setIngredients(ingredients.filter((_, i) => i !== index));

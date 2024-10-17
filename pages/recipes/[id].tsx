@@ -32,7 +32,7 @@ const RecipeDetail = () => {
             const fetchRecipe = async () => {
                 try {
                     const response = await axios.get(`/api/recipes/${id}`);
-                    let data = response.data;
+                    const data = response.data;
 
                     if (typeof data.ingredients === 'string') {
                         data.ingredients = JSON.parse(data.ingredients);
