@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import Button from '../../components/Button_xsize';
+import Image from 'next/image';
 
 
 
@@ -167,10 +168,12 @@ const NewRecipe = () => {
 
                 {previewUrl && (
                     <div className="relative mt-4 w-48 h-48">
-                        <img
+                        <Image
                             src={previewUrl}
                             alt="プレビュー"
                             className="w-full h-full object-cover rounded"
+                            width={200}
+                            height={200}
                         />
                         <button
                             type="button"
@@ -242,11 +245,14 @@ const NewRecipe = () => {
                         <div key={index} className="flex space-x-2 mb-2">
                             <textarea
                                 placeholder="入力すると自動で項目が追加されます"
-                                ref={(el) => (instructionRefs.current[index] = el)}
+                                ref={(el) => {
+                                    instructionRefs.current[index] = el;
+                                    // 型エラーを防ぐために void を返す
+                                    return;
+                                }}
                                 value={instruction}
                                 onChange={(e) => handleInstructionChange(index, e.target.value)}
                                 className="w-full under-line"
-                                rows={1}
                             />
                             {instructions.length > 1 && (
                                 <button

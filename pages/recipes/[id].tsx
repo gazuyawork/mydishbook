@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Button from '../../components/Button_xsize';
+import Image from 'next/image';
 
 interface Ingredient {
     name: string;
@@ -81,10 +82,12 @@ const RecipeDetail = () => {
         <div className="container mx-auto p-4 max-w-4xl mt-10">
             <div className="flex flex-col sm:flex-row items-start">
                 {imageUrl && (
-                    <img
+                    <Image
                         src={imageUrl}
                         alt={recipe.title}
                         className="w-full sm:w-1/4 h-auto object-cover rounded mb-4 mr-5 sm:mb-0 sm:ml-5"
+                        width={200}
+                        height={200}
                     />
                 )}
                 <div className="flex-1">

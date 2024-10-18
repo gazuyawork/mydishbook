@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 
 const EditRecipe = () => {
     const router = useRouter();
@@ -196,10 +197,12 @@ const EditRecipe = () => {
 
                 {previewUrl && (
                     <div className="relative mt-4 w-48 h-48">
-                        <img
+                        <Image
                             src={previewUrl}
                             alt="プレビュー"
                             className="w-full h-full object-cover rounded"
+                            width={200}
+                            height={200}
                         />
                         <button
                             type="button"
@@ -267,20 +270,24 @@ const EditRecipe = () => {
                     </div>
                     {instructions.map((instruction, index) => (
                         <div key={index} className="flex space-x-2 mb-2">
-        <textarea
-            key={index}
-            ref={(el) => (instructionRefs.current[index] = el)}
-            value={instruction}
-            onChange={(e) => {
-                const newInstructions = [...instructions];
-                newInstructions[index] = e.target.value;
-                setInstructions(newInstructions);
-            }}
-            className="w-full under-line mb-2"
-            rows={1}
-            style={{ overflow: 'hidden' }}
-            required
-        />
+<textarea
+    key={index}
+    ref={(el) => {
+        instructionRefs.current[index] = el;
+        return; // void を返して型エラーを回避
+    }}
+    value={instruction}
+    onChange={(e) => {
+        const newInstructions = [...instructions];
+        newInstructions[index] = e.target.value;
+        setInstructions(newInstructions);
+    }}
+    className="w-full under-line mb-2"
+    rows={1}
+    style={{ overflow: 'hidden' }}
+    required
+/>
+
                             {instructions.length > 1 && (
                                 <button
                                     type="button"

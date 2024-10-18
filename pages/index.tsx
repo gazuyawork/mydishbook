@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Recipe {
     id: number;
@@ -55,10 +56,12 @@ const Home = () => {
                     filteredRecipes.map((recipe) => (
                         <li key={recipe.id} className="mt-4 border-b pb-4">
                             <div className="flex items-start">
-                                <img
+                                <Image
                                     src={recipe.image || '/placeholder.png'}
                                     alt={recipe.title}
                                     className="w-24 h-24 object-cover rounded mr-4"
+                                    width={200}
+                                    height={200}
                                 />
                                 <div className="flex-1">
                                     <div className="flex justify-between">
